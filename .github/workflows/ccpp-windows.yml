@@ -1,0 +1,24 @@
+name: Windows
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  cpp-build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-2019]
+        config: [Debug, Release]
+
+    steps:
+      - uses: microsoft/setup-msbuild@v1.0.2
+      - uses: actions/checkout@v2
+      - name: configure
+        run: setx path "%path%;C:\msys64" && bash -l -c "sh ./premake_vs2019.sh"
+      - name: build
+        run: MSBuild containers.sln /p:Configuration=${{ matrix.config }} /p:Platform=x64 /m
